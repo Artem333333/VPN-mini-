@@ -1,5 +1,3 @@
-
-
 require 'concurrent-ruby'
 require 'securerandom'
 
