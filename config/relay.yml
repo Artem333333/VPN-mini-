@@ -1,0 +1,12 @@
+relays:
+  - host: "relay-eu-1.hovpn.net"
+    port: 443
+    priority: 1
+    
+  - host: "relay-us-1.hovpn.net"
+    port: 443
+    priority: 2
+
+failover:
+  latency_threshold_ms: 300
+  enabled: true

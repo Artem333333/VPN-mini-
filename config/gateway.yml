@@ -1,0 +1,14 @@
+listen:
+  address: "0.0.0.0"
+  port: 51820
+  protocols: ["udp", "tcp"]
+
+performance:
+  max_sessions: 100
+  keepalive_interval: 15 
+  handshake_timeout: 10  
+
+
+external_reachability:
+  use_stun: true
+  static_ip: null
