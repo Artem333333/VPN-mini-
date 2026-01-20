@@ -6,7 +6,6 @@ module HOVPN
       include MonitorMixin
       attr_reader :remote_host, :remote_port, :last_activity, :stats, :mtu
 
-
       DEFAULT_MTU        = 1450
       MIN_MTU            = 1280
       KEEPALIVE_INT      = 15
@@ -14,28 +13,24 @@ module HOVPN
       MAX_PPS            = 5000
 
       def initialize(udp_driver, host, port)
-        super()
+        super() 
         @driver = udp_driver
         @remote_host = host
         @remote_port = port
         @mtu         = DEFAULT_MTU
 
-
         @last_activity = Time.now
         @active = true
 
-        @pps_counter  = 0
-         @last_pps_reset = Time.now
+        @pps_counter    = 0
+        @last_pps_reset = Time.now
 
-
-        @stats = 
-        {
+        @stats = {
           tx_bytes: 0, rx_bytes: 0,
           tx_packets: 0, rx_packets: 0,
           errors: 0, dropped: 0,
           start_time: Time.now
         }
-
       end
 
       def send_packet(packet_data)
@@ -50,43 +45,61 @@ module HOVPN
         synchronize do
           begin
             @driver.send(packet_data, @remote_host, @remote_port)
-            update_stats(:tx, packet_data.bytesize)
+            update_stats(:tx, size)
             true
           rescue StandardError => e
             @stats[:errors] += 1
             puts "[SocketWrapper] Send error: #{e.message}"
             false
+          end 
+        end 
+      end
+
+      def handle_incoming(data)
+        synchronize do
+          @last_activity = Time.now
+          update_stats(:rx, data.bytesize)
         end
       end
-    end
 
-    def handle_incoming(data)
-      synchronize do
-        @last_activity = Time.now
-        update_stats(:rx, data.bytesize)
-
+      def alive?
+        (Time.now - @last_activity) < CONNECTION_TIMEOUT
       end
-    end
 
-    def alive?
-      (Time.now - @last_activity) < CONNECTION_TIMEOUT
-    end
-
-    def close!
-      @active = false
-      synchronize do
-        puts "[SocketWrapper] Closing connection to #{@remote_host}:#{remote_port}"
+      def close!
+        @active = false
+        synchronize do
+          puts "[SocketWrapper] Closing connection to #{@remote_host}:#{@remote_port}"
+        end
       end
-    end
 
-    private
+      private
 
-    def update_stats(type, size)
-      key = type == :tx ? :tx_bytes : :rx_bytes
-      @stats[key] += size
-      @stats[:packets] += 1
-      
-    end
+      def rate_limited?
+        now = Time.now
+        if (now - @last_pps_reset) > 1
+          @pps_counter = 0
+          @last_pps_reset = now
+        end
+        @pps_counter += 1
+        @pps_counter > MAX_PPS
+      end
 
-  end
-end
+      def drop_packet(reason)
+        @stats[:dropped] += 1
+        
+        false
+      end
+
+      def update_stats(type, size)
+        if type == :tx
+          @stats[:tx_bytes] += size
+          @stats[:tx_packets] += 1
+        else
+          @stats[:rx_bytes] += size
+          @stats[:rx_packets] += 1
+        end
+      end
+    end 
+  end 
+end 

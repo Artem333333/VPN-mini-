@@ -1,0 +1,21 @@
+# Logfile created on 2026-01-20 15:09:04 +0200 by logger.rb/v1.7.0
+[15:09:04] INFO  | ============================================================
+[15:09:04] INFO  | HOVPN Engine is warming up...
+[15:09:04] DEBUG | StateMachine: Engine initialized in INIT state
+[15:09:04] INFO  | System Check: [OS: x64-mingw-ucrt] [CPUs: 8]
+[15:09:04] ERROR | Wintun driver MISSING at C:/Users/home/Desktop/VPN/native/wintun.dll
+[15:09:04] INFO  | Bootstrap complete. System is stable.
+[15:09:04] DEBUG | StateMachine: Event 'start' attempting transition to handshaking
+[15:09:04] INFO  | STATE_CHANGE: [INIT] --(start)--> [HANDSHAKING] (Stayed in init: 0.0s)
+[15:09:04] INFO  | Entering primary event loop...
+[15:09:04] INFO  | Engine is humming. Active Workers: 2
+[15:12:14] INFO  | ============================================================
+[15:12:14] INFO  | HOVPN Engine is warming up...
+[15:12:14] DEBUG | StateMachine: Engine initialized in INIT state
+[15:12:15] INFO  | System Check: [OS: x64-mingw-ucrt] [CPUs: 8]
+[15:12:15] ERROR | Wintun driver MISSING at C:/Users/home/Desktop/VPN/native/wintun.dll
+[15:12:15] INFO  | Bootstrap complete. System is stable.
+[15:12:15] DEBUG | StateMachine: Event 'start' attempting transition to handshaking
+[15:12:15] INFO  | STATE_CHANGE: [INIT] --(start)--> [HANDSHAKING] (Stayed in init: 0.0s)
+[15:12:15] INFO  | Entering primary event loop...
+[15:12:15] INFO  | Engine is humming. Active Workers: 2
