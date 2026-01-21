@@ -5,7 +5,7 @@ require_relative 'logger'
 require_relative 'state_machine'
 require_relative 'session_manager'
 
-# Подключаем сетевой стек
+
 require_relative '../network/udp_stack'
 
 module HOVPN
@@ -25,8 +25,6 @@ module HOVPN
         @session_manager = HOVPN::Core::SessionManager.new(@logger)
         @udp_stack       = HOVPN::Network::UDPStack.new(@logger)
 
-        # Добавляем тестовую сессию для нашего клиента
-        # Ключ должен быть ровно 32 байта
         test_key = "12345678901234567890123456789012".dup.force_encoding("BINARY")
         @session_manager.add_session("127.0.0.1", test_key)
 
@@ -39,7 +37,7 @@ module HOVPN
           @udp_stack.bind!
           @logger.info('HOVPN: Engine is humming...')
 
-          # Запуск прослушивания сети
+     
           task.async { @udp_stack.listen(@session_manager) }
         end
       end

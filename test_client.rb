@@ -8,7 +8,7 @@ end
 
 require 'rbnacl'
 
-# 1. Настройка: Ключ 32 байта в BINARY кодировке
+
 shared_key = "12345678901234567890123456789012".force_encoding("BINARY") 
 server_host = '127.0.0.1'
 server_port = 4444
