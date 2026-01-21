@@ -1,19 +1,45 @@
 # frozen_string_literal: true
+require 'bundler/setup'
+require 'fiddle'
 
-require_relative 'lib/hovpn'
-require_relative 'lib/application'
+# Блок загрузки DLL (УЖЕ РАБОТАЕТ У ТЕБЯ)
+begin
+  dll_path = File.expand_path("sodium.dll", __dir__)
+  Fiddle.dlopen(dll_path)
+  ENV['SODIUM_LIB'] = dll_path
+  puts "✅ Библиотека загружена напрямую через Fiddle!"
+rescue => e
+  puts "❌ Ошибка загрузки DLL: #{e.message}"
+  exit
+end
 
-puts "--- HOVPN: Home Office VPN Startup ---"
+require 'rbnacl'
+puts "✅ Криптография (RbNaCl) готова к работе!"
+
+# Настройка путей
+$LOAD_PATH.unshift File.expand_path('lib', __dir__)
+
+# ЗАГРУЗКА БЕЗ ОШИБКИ WRAPPER
+require 'async'
+begin
+  require 'async/io'
+rescue LoadError => e
+  # Если это та самая ошибка async/wrapper, мы ее просто игнорируем
+  raise e unless e.message.include?('async/wrapper')
+end
+
+require 'hovpn'
+require 'application'
+
+puts "--- HOVPN: Инициализация системы ---"
 
 begin
-  # В будущем здесь будет загрузка из config.yml
   app = HOVPN::Application.instance
   app.bootstrap!
   app.run!
 rescue Interrupt
-  puts "\nShutdown gracefully..."
-  exit(0)
+  puts "\n[!] Выход..."
 rescue StandardError => e
-  puts "Fatal error on startup: #{e.message}"
-  puts e.backtrace.join("\n")
+  puts "\n[!] ОШИБКА: #{e.message}"
+  puts e.backtrace.first(5)
 end
