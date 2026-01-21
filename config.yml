@@ -1,0 +1,10 @@
+node_name: "home_server"
+listen_port: 4444
+
+psk: "quantum-secure-preshared-key-32-chars!" 
+
+private_key_path: "./keys/private.key"
+
+virtual_network:
+  ipv4: "10.8.0.1"
+  ipv6: "fd00:0001::1"

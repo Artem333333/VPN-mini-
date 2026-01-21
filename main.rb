@@ -1,20 +1,19 @@
-require 'ruby_installer'
+# frozen_string_literal: true
 
-RubyInstaller::Runtime.add_dll_directory(File.expand_path(__dir__))
+require_relative 'lib/hovpn'
+require_relative 'lib/application'
 
-app_file = File.expand_path('lib/core/application.rb', __dir__)
-if File.exist?(app_file)
-  require_relative 'lib/core/application'
-else
-  puts "ERROR: File not found at #{app_file}"
-  exit 1
-end
+puts "--- HOVPN: Home Office VPN Startup ---"
 
 begin
-  app = HOVPN::Core::Application.instance
-  app.bootstrap!('config.yaml')
+  # В будущем здесь будет загрузка из config.yml
+  app = HOVPN::Application.instance
+  app.bootstrap!
   app.run!
+rescue Interrupt
+  puts "\nShutdown gracefully..."
+  exit(0)
 rescue StandardError => e
-  puts "ERROR: #{e.message}"
-  puts e.backtrace.first(3)
+  puts "Fatal error on startup: #{e.message}"
+  puts e.backtrace.join("\n")
 end

@@ -55,3 +55,9 @@
 [10:49:58] INFO  | UDP: Слушаем на 0.0.0.0:4444
 [10:49:58] INFO  | HOVPN: Engine is humming...
 [10:50:01] DEBUG | UDP: Получен пакет от 127.0.0.1, расшифровано: 34 байт
+[11:05:49] INFO  | HOVPN: Bootstrapping components...
+[11:05:49] INFO  | SessionManager: Сессия для 127.0.0.1 успешно инициализирована.
+[11:05:49] INFO  | HOVPN: Bootstrap complete. Test session loaded.
+[11:05:49] INFO  | UDP: Слушаем на 0.0.0.0:4444
+[11:05:49] INFO  | HOVPN: Engine is humming...
+[11:05:54] DEBUG | UDP: Получен пакет от 127.0.0.1, расшифровано: 34 байт
