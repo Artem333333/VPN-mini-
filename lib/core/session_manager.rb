@@ -1,42 +1,37 @@
-require 'concurrent-ruby'
+# frozen_string_literal: true
+require_relative '../crypto/aead'
 
 module HOVPN
   module Core
+    # Вспомогательный класс для сессии
+    class Session
+      def initialize(key)
+        @aead = HOVPN::Crypto::AEAD.new(key)
+      end
+
+      def decrypt_packet(data)
+        return nil if data.size < 12 # Минимум 12 байт для nonce
+        nonce = data[0...12]
+        ciphertext = data[12..-1]
+        @aead.decrypt(nonce, ciphertext)
+      end
+    end
+
     class SessionManager
       def initialize(logger)
         @logger = logger
-      
-        @sessions = Concurrent::Hash.new
-        @lock = Mutex.new
+        @sessions = {}
       end
 
-      def find_session(ip, port)
-        @sessions["#{ip}:#{port}"]
+      # Принимает ID и Ключ, создает объект Session
+      def add_session(client_id, key)
+        @sessions[client_id] = Session.new(key)
+        @logger.info("SessionManager: Сессия для #{client_id} создана.")
       end
 
-      def add_session(session)
-        key = "#{session.endpoint[:ip]}:#{session.endpoint[:port]}"
-        @sessions[key] = session
-        @logger.info("SessionManager: Registered new session #{session.session_id} for #{key}")
-      end
-
-    
-      def cleanup!
-        count = 0
-        @sessions.delete_if do |key, session|
-          if session.dead?
-            @logger.info("SessionManager: Removing timed out session #{session.session_id}")
-            count += 1
-            true
-          else
-            false
-          end
-        end
-        count
-      end
-
-      def active_count
-        @sessions.size
+      # Теперь принимает ip и port, как просит UDPStack
+      def find_session(ip, _port = nil)
+        @sessions[ip]
       end
     end
   end
