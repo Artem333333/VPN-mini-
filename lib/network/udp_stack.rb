@@ -1,36 +1,49 @@
+
 require 'socket'
+require 'async'
+require 'async/io'
 
 module HOVPN
   module Network
     class UDPStack
       def initialize(logger, host: '0.0.0.0', port: 4444)
         @logger = logger
-        @socket = UDPSocket.new
         @host = host
         @port = port
+        @socket = nil
       end
 
+     
       def bind!
+        @socket = Async::IO::UDPSocket.new
         @socket.bind(@host, @port)
-        @logger.info("UDP: Слушаем на #{@host}:#{@port}")
+        @logger.info("UDP Stack: Слушаем на #{@host}:#{@port} (Async mode)")
       end
 
-      def listen(session_manager)
+    
+      def listen
+        @logger.info("UDP Stack: Цикл обработки запущен.")
+        
         loop do
-          data, sender = @socket.recvfrom(65_535)
-          ip = sender[3]
-          port = sender[1]
+          
+          data, addr = @socket.recvfrom(65_535)
+          ip = addr[3]
+          port = addr[1]
 
-          session = session_manager.find_session(ip, port)
-          if session
-            decrypted = session.decrypt_packet(data)
-            @logger.debug("UDP: Получен пакет от #{ip}, расшифровано: #{decrypted.size} байт") if decrypted
-          else
-            @logger.warn("UDP: Неизвестный пакет от #{ip}:#{port}")
+         
+          Async do
+            HOVPN::Application.instance.process_incoming_packet(data, ip, port)
           end
         rescue StandardError => e
-          @logger.error("UDP Error: #{e.message}")
+          @logger.error("UDP Stack Error: #{e.message}")
         end
+      end
+
+     
+      def send_data(data, ip, port)
+        @socket.send(data, 0, ip, port)
+      rescue StandardError => e
+        @logger.error("UDP Send Error to #{ip}:#{port} -> #{e.message}")
       end
     end
   end
