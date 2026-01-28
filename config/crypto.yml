@@ -1,3 +1,0 @@
-algorithm: "chacha20-poly1305"
-key_rotation_days: 30
-handshake_timeout: 10

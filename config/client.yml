@@ -1,5 +1,0 @@
-listen_addres: "0.0.0.0"
-listen_port: 51820
-protocol_preference: ["udp", "tcp"]
-max_sessions: 100
-keepalive_interval: 15
