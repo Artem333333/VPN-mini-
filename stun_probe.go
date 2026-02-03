@@ -23,8 +23,8 @@ func main() {
 
 	req := make([]byte, 20)
 
-	binary.BigEndian.PutUint16(req[0:2], 0x0001) 
-	binary.BigEndian.PutUint16(req[2:4], 0x0000) 
+	binary.BigEndian.PutUint16(req[0:2], 0x0001)
+	binary.BigEndian.PutUint16(req[2:4], 0x0000)
 	binary.BigEndian.PutUint32(req[4:8], 0x2112A442)
 
 	_, _ = rand.Read(req[8:20])

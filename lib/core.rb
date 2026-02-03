@@ -1,7 +1,10 @@
+require 'dotenv/load'
 require 'yaml'
 require 'security/keys'
 require 'network/nat_pmp'
 require 'discovery/mdns_reflector'
+
+
 
 module HomeNexus
   class App
